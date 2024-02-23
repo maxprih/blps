@@ -9,6 +9,7 @@ import org.maxpri.blps.model.entity.Article;
 import org.maxpri.blps.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,18 +60,21 @@ public class ArticleController {
     }
 
     @PostMapping("/{id}/approve")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Одобрение статьи модератором")
     public ResponseEntity<MessageResponse> approveArticle(@PathVariable Long id) {
         return ResponseEntity.ok(articleService.approveArticle(id));
     }
 
     @PostMapping("/{id}/reject")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Отклонение статьи модератором")
     public ResponseEntity<MessageResponse> rejectArticle(@PathVariable Long id) {
         return ResponseEntity.ok(articleService.rejectArticle(id));
     }
 
     @GetMapping("/to_approve")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Получение непроверенных статей модератором")
     public ResponseEntity<List<ArticlePreviewDto>> getArticlesToApprove() {
         return ResponseEntity.ok(articleService.getNonApprovedArticles());
