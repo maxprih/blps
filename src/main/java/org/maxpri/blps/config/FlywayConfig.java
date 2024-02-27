@@ -20,25 +20,10 @@ public class FlywayConfig {
 
     @Autowired @Qualifier("imageDataSource")
     private DataSource imageDataSource;
-//    @Value("${datasource.article.url}")
-//    String articleUrl;
-//    @Value("${datasource.article.username}")
-//    String articleUser;
-//    @Value("${datasource.article.password}")
-//    String articlePassword;
-//
-//    @Value("${datasource.art-image.url}")
-//    String artImageUrl;
-//    @Value("${datasource.art-image.username}")
-//    String artImageUser;
-//    @Value("${datasource.art-image.password}")
-//    String artImagePassword;
-
 
     @PostConstruct
     @DependsOn({"imageDataSource", "articleDataSource"})
     public void migrate() {
-        System.out.println("123123");
         Flyway flywayArticle = Flyway.configure()
                 .dataSource(articleDataSource)
                 .locations("classpath:db/article_migration")
