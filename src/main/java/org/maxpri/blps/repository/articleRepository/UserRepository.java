@@ -1,6 +1,6 @@
-package org.maxpri.blps.repsitory;
+package org.maxpri.blps.repository.articleRepository;
 
-import org.maxpri.blps.model.entity.User;
+import org.maxpri.blps.model.entity.articleEntity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,7 +1,7 @@
-package org.maxpri.blps.repsitory;
+package org.maxpri.blps.repository.articleRepository;
 
 import org.maxpri.blps.model.dto.TagDto;
-import org.maxpri.blps.model.entity.Tag;
+import org.maxpri.blps.model.entity.articleEntity.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

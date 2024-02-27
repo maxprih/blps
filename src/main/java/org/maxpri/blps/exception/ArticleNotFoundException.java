@@ -5,9 +5,9 @@ import lombok.Getter;
 /**
  * @author max_pri
  */
+@Getter
 public class ArticleNotFoundException extends RuntimeException {
-    @Getter
-    private Long articleId;
+    private final Long articleId;
 
     public ArticleNotFoundException(Long articleId) {
         this.articleId = articleId;

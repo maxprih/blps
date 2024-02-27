@@ -1,7 +1,7 @@
 package org.maxpri.blps.service;
 
-import org.maxpri.blps.model.entity.User;
-import org.maxpri.blps.repsitory.UserRepository;
+import org.maxpri.blps.model.entity.articleEntity.User;
+import org.maxpri.blps.repository.articleRepository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

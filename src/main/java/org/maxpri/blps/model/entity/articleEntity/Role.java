@@ -1,4 +1,4 @@
-package org.maxpri.blps.model.entity;
+package org.maxpri.blps.model.entity.articleEntity;
 
 import jakarta.persistence.*;
 

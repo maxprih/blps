@@ -24,4 +24,10 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         MessageResponse response = new MessageResponse("Не найден тэг с данным ID: " + e.getTagId());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(value = ImageNotFoundException.class)
+    private ResponseEntity<MessageResponse> handleImageNotFound(ImageNotFoundException e) {
+        MessageResponse response = new MessageResponse("Не найдена картинка с данным ID: " + e.getImageId());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }

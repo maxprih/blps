@@ -1,7 +1,7 @@
 package org.maxpri.blps.service;
 
-import org.maxpri.blps.model.entity.Role;
-import org.maxpri.blps.repsitory.RoleRepository;
+import org.maxpri.blps.model.entity.articleEntity.Role;
+import org.maxpri.blps.repository.articleRepository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

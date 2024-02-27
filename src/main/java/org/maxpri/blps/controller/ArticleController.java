@@ -5,13 +5,16 @@ import org.maxpri.blps.model.dto.ArticleDto;
 import org.maxpri.blps.model.dto.ArticlePreviewDto;
 import org.maxpri.blps.model.dto.request.CreateArticleRequest;
 import org.maxpri.blps.model.dto.response.MessageResponse;
-import org.maxpri.blps.model.entity.Article;
+import org.maxpri.blps.model.entity.articleEntity.Article;
 import org.maxpri.blps.service.ArticleService;
+import org.maxpri.blps.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -22,10 +25,12 @@ import java.util.List;
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final ImageService imageService;
 
     @Autowired
-    public ArticleController(ArticleService articleService) {
+    public ArticleController(ArticleService articleService, ImageService imageService) {
         this.articleService = articleService;
+        this.imageService = imageService;
     }
 
     @GetMapping("/preview")
@@ -57,6 +62,19 @@ public class ArticleController {
     public ResponseEntity<Article> modifyArticle(@RequestBody CreateArticleRequest modifyArticleRequest,
                                                  @PathVariable Long id) {
         return ResponseEntity.ok(articleService.modifyArticle(modifyArticleRequest, id));
+    }
+
+    @PostMapping("/{id}/image")
+    @Operation(summary = "Добавление картинки к статье")
+    public ResponseEntity<Long> addImageToArticle(@PathVariable Long id,
+                                                  @RequestParam MultipartFile image) throws IOException {
+        return ResponseEntity.ok(imageService.addImageToArticle(image, id));
+    }
+
+    @GetMapping("/{id}/images")
+    @Operation(summary = "Получение ID картинок статьи")
+    public ResponseEntity<List<Long>> getImagesIds(@PathVariable Long id) {
+        return ResponseEntity.ok(imageService.getImagesForArticle(id));
     }
 
     @PostMapping("/{id}/approve")
