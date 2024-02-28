@@ -72,7 +72,7 @@ public class ArticleDataSourceConfig {
 
         AtomikosDataSourceBean xaDataSource = new AtomikosDataSourceBean();
         xaDataSource.setXaDataSource(ds);
-        xaDataSource.setMaxPoolSize(5);
+        xaDataSource.setMaxPoolSize(15);
         xaDataSource.setUniqueResourceName("xa_article");
         return xaDataSource;
     }

@@ -40,8 +40,10 @@ public class ArticleService {
         this.tagRepository = tagRepository;
     }
 
-    public List<ArticlePreviewDto> getPreviewList() {
-        return articleRepository.findArticlePreviews();
+    public ArticlePreviewDto getPreviewById(Long id) {
+        ArticlePreviewDto previewDto = articleRepository.findArticlePreview(id)
+                .orElseThrow(() -> new ArticleNotFoundException(id));
+        return previewDto;
     }
 
     public ArticleDto getArticleById(Long id) {

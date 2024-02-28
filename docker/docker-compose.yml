@@ -3,20 +3,19 @@ version: '3'
 services:
   article:
     image: postgres
+    container_name: postgres
     ports:
       - "5433:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: article
-#    volumes:
-#      - ./docker-entrypoint-initdb.d.article:/docker-entrypoint-initdb.d
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
     command:
       - "postgres"
       - "-c"
       - "max_prepared_transactions=100"
-
-
   art-image:
     image: postgres
     ports:
@@ -25,9 +24,84 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: art-image
-#    volumes:
-#      - ./docker-entrypoint-initdb.d.art-image:/docker-entrypoint-initdb.d
     command:
       - "postgres"
       - "-c"
       - "max_prepared_transactions=100"
+  elastic:
+    image: elasticsearch:8.12.2
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1000m"
+        max-file: "10"
+    container_name: elastic
+    environment:
+      - discovery.type=single-node
+      - node.name=elastic
+      - discovery.seed_hosts=elastic
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - ./elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    networks:
+      - maxprinet
+  kibana:
+    image: kibana:8.12.2
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    expose:
+      - "5601"
+    environment:
+      ELASTICSEARCH_URL: http://elastic:9200
+      ELASTICSEARCH_HOSTS: http://elastic:9200
+    networks:
+      - maxprinet
+  logstash:
+    user: root
+    image: logstash:8.12.2
+    container_name: logstash
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+    ports:
+      - "5044:5044"
+    depends_on:
+      - article
+      - elastic
+    environment:
+      - PIPELINE_WORKERS=1
+      - PIPELINE_BATCH_SIZE=125
+      - PIPELINE_BATCH_DELAY=50
+    volumes:
+      - ./conf/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./logstash_data:/usr/share/logstash/data
+      - ./conf/postgresql-42.6.0.jar:/usr/share/logstash/postgresql-42.6.0.jar
+    networks:
+      - maxprinet
+networks:
+  maxprinet:
+volumes:
+  maxpridata:
+  article:
+  logstash:
+

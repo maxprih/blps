@@ -1,5 +1,6 @@
 package org.maxpri.blps.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.maxpri.blps.model.dto.request.SignInRequest;
@@ -28,11 +29,13 @@ public class AuthController {
     }
 
     @PostMapping("/sign-in")
+    @Operation(summary = "Вход")
     public ResponseEntity<JwtResponse> signIn(@RequestBody @Valid SignInRequest signInRequest) {
         return ResponseEntity.ok(authService.signIn(signInRequest));
     }
 
     @PostMapping("/sign-up")
+    @Operation(summary = "Регистрация")
     public ResponseEntity<JwtResponse> signUp(@RequestBody @Valid SignUpRequest signUpRequest) {
         return ResponseEntity.ok(authService.signUp(signUpRequest));
     }

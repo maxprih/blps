@@ -36,3 +36,7 @@ build/
 .mvn
 
 mvn*
+
+docker/pg_data
+docker/elasticsearch_data
+docker/logstash_data

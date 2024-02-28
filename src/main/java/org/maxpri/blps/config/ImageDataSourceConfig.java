@@ -77,7 +77,7 @@ public class ImageDataSourceConfig {
 
         AtomikosDataSourceBean xaDataSource = new AtomikosDataSourceBean();
         xaDataSource.setXaDataSource(ds);
-        xaDataSource.setMaxPoolSize(5);
+        xaDataSource.setMaxPoolSize(15);
         xaDataSource.setUniqueResourceName("xa_image");
         return xaDataSource;
     }

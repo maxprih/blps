@@ -16,8 +16,8 @@ import java.util.Optional;
  */
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long> {
-    @Query("SELECT new org.maxpri.blps.model.dto.ArticlePreviewDto(a.id, a.name, a.previewText) FROM Article a where a.isApproved=true and a.isRejected=false")
-    List<ArticlePreviewDto> findArticlePreviews();
+    @Query("SELECT new org.maxpri.blps.model.dto.ArticlePreviewDto(a.id, a.name, a.previewText) FROM Article a where a.isApproved=true and a.isRejected=false and a.id = ?1")
+    Optional<ArticlePreviewDto> findArticlePreview(Long id);
 
     @Query("SELECT new org.maxpri.blps.model.dto.ArticlePreviewDto(a.id, a.name, a.previewText) FROM Article a where a.isApproved=false and a.isRejected=false")
     List<ArticlePreviewDto> findArticlePreviewsNonApproved();
@@ -29,9 +29,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     List<ArticlePreviewDto> findPreviewsBySearchString(@Param("query") String query);
 
     Optional<Article> findByIdAndIsApprovedAndIsRejected(Long id, Boolean isApproved, Boolean isRejected);
-
-//    @Query("SELECT new org.maxpri.blps.model.dto.ArticlePreviewDto(a.id, a.name, a.previewText) FROM Article a JOIN a.tags t WHERE t.id IN :tagIds AND a.isApproved=true")
-//    List<ArticlePreviewDto> findArticlesByTagIds(@Param("tagIds") List<Long> tagIds);
 
     @Query("SELECT DISTINCT new org.maxpri.blps.model.dto.ArticlePreviewDto(a.id, a.name, a.previewText) FROM Article a join a.tags t where t.id in (:tagIds) GROUP BY a.id HAVING COUNT(DISTINCT t.id) = :tagCount")
     List<ArticlePreviewDto> findArticlesByTagIds(@Param("tagIds") List<Long> tagIds, @Param("tagCount") Integer tagCount);
