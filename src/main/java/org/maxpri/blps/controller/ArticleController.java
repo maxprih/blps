@@ -1,7 +1,6 @@
 package org.maxpri.blps.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.maxpri.blps.model.dto.ArticleDto;
 import org.maxpri.blps.model.dto.ArticlePreviewDto;
 import org.maxpri.blps.model.dto.ArticleSearchDto;
 import org.maxpri.blps.model.dto.request.CreateArticleRequest;
@@ -51,7 +50,7 @@ public class ArticleController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Получение статьи по ID")
-    public ResponseEntity<ArticleDto> getArticle(@PathVariable Long id) {
+    public ResponseEntity<?> getArticle(@PathVariable Long id) {
         return ResponseEntity.ok(articleService.getArticleById(id));
     }
 
@@ -73,6 +72,18 @@ public class ArticleController {
                                                  @PathVariable Long id) {
         return ResponseEntity.ok(articleService.modifyArticle(modifyArticleRequest, id));
     }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Удаление статьи")
+    public ResponseEntity<Long> deleteArticle(@PathVariable Long id) {
+        return ResponseEntity.ok(articleService.deleteArticleById(id));
+    }
+//
+//    @PostMapping("/{id}/rollback")
+//    @Operation(summary = "Восстановление статьи")
+//    public ResponseEntity<Long> rollbackArticle(@PathVariable Long id) {
+//        return ResponseEntity.ok(articleService.rollbackArticle(id));
+//    }
 
     @PostMapping("/{id}/image")
     @Operation(summary = "Добавление картинки к статье")

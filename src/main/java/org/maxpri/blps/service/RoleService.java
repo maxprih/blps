@@ -20,4 +20,8 @@ public class RoleService {
     public Role getUserRole() {
         return roleRepository.findByRoleName("ROLE_USER").orElseThrow(RuntimeException::new);
     }
+
+    public Role getAdminRole() {
+        return roleRepository.findByRoleName("ROLE_ADMIN").orElseThrow(RuntimeException::new);
+    }
 }

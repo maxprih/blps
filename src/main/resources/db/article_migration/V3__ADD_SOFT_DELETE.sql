@@ -1,0 +1,1 @@
+alter table article add column is_deleted bool default false;

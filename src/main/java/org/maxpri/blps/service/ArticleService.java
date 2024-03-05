@@ -1,7 +1,9 @@
 package org.maxpri.blps.service;
 
 import org.maxpri.blps.exception.ArticleNotFoundException;
+import org.maxpri.blps.exception.ImageNotFoundException;
 import org.maxpri.blps.exception.TagNotFoundException;
+import org.maxpri.blps.model.dto.DeletedArticleResponse;
 import org.maxpri.blps.repository.imageRepository.ImageRepository;
 import org.maxpri.blps.model.dto.ArticleDto;
 import org.maxpri.blps.model.dto.ArticlePreviewDto;
@@ -46,9 +48,17 @@ public class ArticleService {
         return previewDto;
     }
 
-    public ArticleDto getArticleById(Long id) {
+    public Object getArticleById(Long id) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new ImageNotFoundException(id));
+
+        if (article.getIsDeleted()) {
+            return new DeletedArticleResponse(article.getId(), article.getBody());
+        }
+
         ArticleDto articleDto = articleRepository.findArticleDtoById(id)
                 .orElseThrow(() -> new ArticleNotFoundException(id));
+
         Set<Tag> tags = tagRepository.findTagsByArticleId(id);
         articleDto.setTags(tags);
         return articleDto;
@@ -74,6 +84,7 @@ public class ArticleService {
                 .lastModified(LocalDateTime.now())
                 .isApproved(false)
                 .isRejected(false)
+                .isDeleted(false)
                 .build();
 
         return articleRepository.save(article);
@@ -140,7 +151,7 @@ public class ArticleService {
     }
 
     public MessageResponse approveArticle(Long id) {
-        Article article = articleRepository.findByIdAndIsApprovedAndIsRejected(id, false, false)
+        Article article = articleRepository.findByIdAndIsApprovedAndIsRejectedAndIsDeleted(id, false, false, false)
                 .orElseThrow(() -> new ArticleNotFoundException(id));
         article.setIsApproved(true);
         article.setLastModified(LocalDateTime.now());
@@ -148,7 +159,7 @@ public class ArticleService {
     }
 
     public MessageResponse rejectArticle(Long id) {
-        Article article = articleRepository.findByIdAndIsApprovedAndIsRejected(id, false, false)
+        Article article = articleRepository.findByIdAndIsApprovedAndIsRejectedAndIsDeleted(id, false, false, false)
                 .orElseThrow(() -> new ArticleNotFoundException(id));
         article.setIsRejected(true);
         article.setLastModified(LocalDateTime.now());
@@ -167,5 +178,22 @@ public class ArticleService {
         });
 
         return articleRepository.findArticlesByTagIds(tagIds, tagIds.size());
+    }
+
+    public Long deleteArticleById(Long id) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new ArticleNotFoundException(id));
+        article.setIsDeleted(true);
+        article.setBody("");
+        articleRepository.save(article);
+        return article.getId();
+    }
+
+    public Long rollbackArticle(Long id) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new ArticleNotFoundException(id));
+        article.setIsDeleted(false);
+        articleRepository.save(article);
+        return article.getId();
     }
 }

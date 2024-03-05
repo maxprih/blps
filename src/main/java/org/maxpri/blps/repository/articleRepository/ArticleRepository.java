@@ -16,20 +16,20 @@ import java.util.Optional;
  */
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long> {
-    @Query("SELECT new org.maxpri.blps.model.dto.ArticlePreviewDto(a.id, a.name, a.previewText) FROM Article a where a.isApproved=true and a.isRejected=false and a.id = ?1")
+    @Query("SELECT new org.maxpri.blps.model.dto.ArticlePreviewDto(a.id, a.name, a.previewText) FROM Article a where a.isApproved=true and a.isRejected=false and a.isDeleted=false and a.id = ?1")
     Optional<ArticlePreviewDto> findArticlePreview(Long id);
 
-    @Query("SELECT new org.maxpri.blps.model.dto.ArticlePreviewDto(a.id, a.name, a.previewText) FROM Article a where a.isApproved=false and a.isRejected=false")
+    @Query("SELECT new org.maxpri.blps.model.dto.ArticlePreviewDto(a.id, a.name, a.previewText) FROM Article a where a.isApproved=false and a.isRejected=false and a.isDeleted=false")
     List<ArticlePreviewDto> findArticlePreviewsNonApproved();
 
-    @Query("SELECT new org.maxpri.blps.model.dto.ArticleDto(a.id, a.name, a.body, a.lastModified) FROM Article a WHERE a.id = ?1 and a.isApproved=true and a.isRejected=false")
+    @Query("SELECT new org.maxpri.blps.model.dto.ArticleDto(a.id, a.name, a.body, a.lastModified) FROM Article a WHERE a.id = ?1 and a.isApproved=true and a.isRejected=false and a.isDeleted=false")
     Optional<ArticleDto> findArticleDtoById(Long id);
 
-    @Query("SELECT new org.maxpri.blps.model.dto.ArticlePreviewDto(a.id, a.name, a.previewText) FROM Article a WHERE LOWER(a.name) LIKE %:query% and a.isApproved = true and a.isRejected=false")
+    @Query("SELECT new org.maxpri.blps.model.dto.ArticlePreviewDto(a.id, a.name, a.previewText) FROM Article a WHERE LOWER(a.name) LIKE %:query% and a.isApproved = true and a.isRejected=false and a.isDeleted=false")
     List<ArticlePreviewDto> findPreviewsBySearchString(@Param("query") String query);
 
-    Optional<Article> findByIdAndIsApprovedAndIsRejected(Long id, Boolean isApproved, Boolean isRejected);
+    Optional<Article> findByIdAndIsApprovedAndIsRejectedAndIsDeleted(Long id, Boolean isApproved, Boolean isRejected, Boolean isDeleted);
 
-    @Query("SELECT DISTINCT new org.maxpri.blps.model.dto.ArticlePreviewDto(a.id, a.name, a.previewText) FROM Article a join a.tags t where t.id in (:tagIds) GROUP BY a.id HAVING COUNT(DISTINCT t.id) = :tagCount")
+    @Query("SELECT DISTINCT new org.maxpri.blps.model.dto.ArticlePreviewDto(a.id, a.name, a.previewText) FROM Article a join a.tags t where t.id in (:tagIds) and a.isDeleted = false GROUP BY a.id HAVING COUNT(DISTINCT t.id) = :tagCount")
     List<ArticlePreviewDto> findArticlesByTagIds(@Param("tagIds") List<Long> tagIds, @Param("tagCount") Integer tagCount);
 }

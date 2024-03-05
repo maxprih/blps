@@ -46,6 +46,9 @@ public class Article {
     @Column(name = "is_rejected")
     private Boolean isRejected;
 
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
+
     @ManyToMany
     @JoinTable(
             name = "article_tag",
