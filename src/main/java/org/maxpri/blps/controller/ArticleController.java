@@ -7,13 +7,11 @@ import org.maxpri.blps.model.dto.request.CreateArticleRequest;
 import org.maxpri.blps.model.dto.response.MessageResponse;
 import org.maxpri.blps.model.entity.articleEntity.Article;
 import org.maxpri.blps.service.ArticleService;
-import org.maxpri.blps.service.ImageService;
 import org.maxpri.blps.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,13 +24,11 @@ import java.util.List;
 public class ArticleController {
 
     private final ArticleService articleService;
-    private final ImageService imageService;
     private final SearchService searchService;
 
     @Autowired
-    public ArticleController(ArticleService articleService, ImageService imageService, SearchService searchService) {
+    public ArticleController(ArticleService articleService, SearchService searchService) {
         this.articleService = articleService;
-        this.imageService = imageService;
         this.searchService = searchService;
     }
 
@@ -85,18 +81,18 @@ public class ArticleController {
 //        return ResponseEntity.ok(articleService.rollbackArticle(id));
 //    }
 
-    @PostMapping("/{id}/image")
-    @Operation(summary = "Добавление картинки к статье")
-    public ResponseEntity<Long> addImageToArticle(@PathVariable Long id,
-                                                  @RequestParam MultipartFile image) throws IOException {
-        return ResponseEntity.ok(imageService.addImageToArticle(image, id));
-    }
-
-    @GetMapping("/{id}/images")
-    @Operation(summary = "Получение ID картинок статьи")
-    public ResponseEntity<List<Long>> getImagesIds(@PathVariable Long id) {
-        return ResponseEntity.ok(imageService.getImagesForArticle(id));
-    }
+//    @PostMapping("/{id}/image")
+//    @Operation(summary = "Добавление картинки к статье")
+//    public ResponseEntity<Long> addImageToArticle(@PathVariable Long id,
+//                                                  @RequestParam MultipartFile image) throws IOException {
+//        return ResponseEntity.ok(imageService.addImageToArticle(image, id));
+//    }
+//
+//    @GetMapping("/{id}/images")
+//    @Operation(summary = "Получение ID картинок статьи")
+//    public ResponseEntity<List<Long>> getImagesIds(@PathVariable Long id) {
+//        return ResponseEntity.ok(imageService.getImagesForArticle(id));
+//    }
 
     @PostMapping("/{id}/approve")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
