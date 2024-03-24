@@ -1,25 +1,20 @@
 package org.maxpri.blps.service;
 
 import org.maxpri.blps.exception.ArticleNotFoundException;
-import org.maxpri.blps.exception.ImageNotFoundException;
 import org.maxpri.blps.exception.TagNotFoundException;
-import org.maxpri.blps.model.dto.DeletedArticleResponse;
-import org.maxpri.blps.repository.imageRepository.ImageRepository;
 import org.maxpri.blps.model.dto.ArticleDto;
 import org.maxpri.blps.model.dto.ArticlePreviewDto;
+import org.maxpri.blps.model.dto.DeletedArticleResponse;
 import org.maxpri.blps.model.dto.request.CreateArticleRequest;
 import org.maxpri.blps.model.dto.response.MessageResponse;
 import org.maxpri.blps.model.entity.articleEntity.Article;
 import org.maxpri.blps.model.entity.articleEntity.Tag;
-import org.maxpri.blps.model.entity.imageEntity.ArticleImage;
 import org.maxpri.blps.repository.articleRepository.ArticleRepository;
 import org.maxpri.blps.repository.articleRepository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -32,13 +27,11 @@ import java.util.Set;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
-    private final ImageRepository imageRepository;
     private final TagRepository tagRepository;
 
     @Autowired
-    public ArticleService(ArticleRepository articleRepository, ImageRepository imageRepository, TagRepository tagRepository) {
+    public ArticleService(ArticleRepository articleRepository, TagRepository tagRepository) {
         this.articleRepository = articleRepository;
-        this.imageRepository = imageRepository;
         this.tagRepository = tagRepository;
     }
 
@@ -50,7 +43,7 @@ public class ArticleService {
 
     public Object getArticleById(Long id) {
         Article article = articleRepository.findById(id)
-                .orElseThrow(() -> new ImageNotFoundException(id));
+                .orElseThrow(() -> new ArticleNotFoundException(id));
 
         if (article.getIsDeleted()) {
             return new DeletedArticleResponse(article.getId(), article.getBody());
@@ -90,37 +83,6 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
-    @Transactional(transactionManager = "myTransactionManager")
-    public Article createArticleWithImage(CreateArticleRequest createArticleRequest, MultipartFile image) throws IOException {
-        Set<Tag> tags = new HashSet<>();
-
-        if (createArticleRequest.getTagIds() != null) {
-            createArticleRequest.getTagIds().forEach(tagId -> {
-                Tag tag = tagRepository.findById(tagId)
-                        .orElseThrow(() -> new TagNotFoundException(tagId));
-                tags.add(tag);
-            });
-        }
-
-        Article article = Article.builder()
-                .name(createArticleRequest.getName())
-                .body(createArticleRequest.getBody())
-                .previewText(createArticleRequest.getPreviewText())
-                .tags(tags)
-                .lastModified(LocalDateTime.now())
-                .isApproved(false)
-                .isRejected(false)
-                .build();
-        Long articleId = articleRepository.save(article).getId();
-
-        ArticleImage articleImage = ArticleImage.builder()
-                .image(image.getBytes())
-                .articleId(articleId)
-                .build();
-        imageRepository.save(articleImage);
-
-        return article;
-    }
 
     @Transactional
     public Article modifyArticle(CreateArticleRequest modifyRequest, Long id) {
