@@ -3,7 +3,7 @@ package org.maxpri.blps.service;
 import org.maxpri.blps.model.dto.request.SignInRequest;
 import org.maxpri.blps.model.dto.request.SignUpRequest;
 import org.maxpri.blps.model.dto.response.JwtResponse;
-import org.maxpri.blps.model.entity.articleEntity.User;
+import org.maxpri.blps.model.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

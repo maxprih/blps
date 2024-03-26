@@ -5,16 +5,18 @@ import org.maxpri.blps.model.dto.ArticlePreviewDto;
 import org.maxpri.blps.model.dto.ArticleSearchDto;
 import org.maxpri.blps.model.dto.request.CreateArticleRequest;
 import org.maxpri.blps.model.dto.response.MessageResponse;
-import org.maxpri.blps.model.entity.articleEntity.Article;
+import org.maxpri.blps.model.entity.Article;
 import org.maxpri.blps.service.ArticleService;
 import org.maxpri.blps.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author max_pri
@@ -58,7 +60,13 @@ public class ArticleController {
 
     @PostMapping()
     @Operation(summary = "Создание новой статьи")
-    public ResponseEntity<Article> createNewArticle(@RequestBody CreateArticleRequest createArticleRequest) {
+    public ResponseEntity<Article> createNewArticle(
+            @RequestParam("name") String name,
+            @RequestParam("body") String body,
+            @RequestParam("previewText") String previewText,
+            @RequestParam(value = "tagIds", required = false) Set<Long> tagIds,
+            @RequestParam("files") List<MultipartFile> files) {
+        CreateArticleRequest createArticleRequest = new CreateArticleRequest(name, body , previewText, tagIds, files);
         return ResponseEntity.ok(articleService.createArticle(createArticleRequest));
     }
 
@@ -74,6 +82,13 @@ public class ArticleController {
     public ResponseEntity<Long> deleteArticle(@PathVariable Long id) {
         return ResponseEntity.ok(articleService.deleteArticleById(id));
     }
+
+    @DeleteMapping("/{id}/full")
+    @Operation(summary = "Удаление статьи")
+    public ResponseEntity<?> fullDeleteArticle(@PathVariable Long id) {
+        articleService.fullDeleteArticle(id);
+        return ResponseEntity.ok().build();
+    }
 //
 //    @PostMapping("/{id}/rollback")
 //    @Operation(summary = "Восстановление статьи")
@@ -81,18 +96,19 @@ public class ArticleController {
 //        return ResponseEntity.ok(articleService.rollbackArticle(id));
 //    }
 
-//    @PostMapping("/{id}/image")
-//    @Operation(summary = "Добавление картинки к статье")
-//    public ResponseEntity<Long> addImageToArticle(@PathVariable Long id,
-//                                                  @RequestParam MultipartFile image) throws IOException {
-//        return ResponseEntity.ok(imageService.addImageToArticle(image, id));
-//    }
-//
-//    @GetMapping("/{id}/images")
-//    @Operation(summary = "Получение ID картинок статьи")
-//    public ResponseEntity<List<Long>> getImagesIds(@PathVariable Long id) {
-//        return ResponseEntity.ok(imageService.getImagesForArticle(id));
-//    }
+    @PostMapping("/{id}/image")
+    @Operation(summary = "Добавление картинки к статье")
+    public ResponseEntity<?> addImageToArticle(@PathVariable Long id,
+                                               @RequestParam MultipartFile image) throws IOException {
+        articleService.addImageToArticle(id, image);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/images")
+    @Operation(summary = "Получение ID картинок статьи")
+    public ResponseEntity<Set<String>> getImagesIds(@PathVariable Long id) {
+        return ResponseEntity.ok(articleService.getImageNames(id));
+    }
 
     @PostMapping("/{id}/approve")
     @PreAuthorize("hasRole('ROLE_ADMIN')")

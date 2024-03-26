@@ -2,7 +2,7 @@ package org.maxpri.blps.service;
 
 import org.maxpri.blps.model.dto.TagDto;
 import org.maxpri.blps.model.dto.request.CreateTagRequest;
-import org.maxpri.blps.model.entity.articleEntity.Tag;
+import org.maxpri.blps.model.entity.Tag;
 import org.maxpri.blps.repository.articleRepository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

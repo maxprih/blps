@@ -1,4 +1,4 @@
-package org.maxpri.blps.model.entity.articleEntity;
+package org.maxpri.blps.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -56,4 +56,13 @@ public class Article {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tags;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "article_images", joinColumns = @JoinColumn(name = "article_id"))
+    @Column(name = "image_filename")
+    private Set<String> imageFilenames;
+
+    public void attachImage(String filename) {
+        this.imageFilenames.add(filename);
+    }
 }

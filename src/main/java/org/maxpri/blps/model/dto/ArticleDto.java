@@ -2,7 +2,7 @@ package org.maxpri.blps.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.maxpri.blps.model.entity.articleEntity.Tag;
+import org.maxpri.blps.model.entity.Tag;
 
 import java.time.LocalDateTime;
 import java.util.Set;

@@ -1,8 +1,8 @@
 package org.maxpri.blps.service;
 
 import org.maxpri.blps.exception.UsernameNotFoundException;
-import org.maxpri.blps.model.entity.articleEntity.Role;
-import org.maxpri.blps.model.entity.articleEntity.User;
+import org.maxpri.blps.model.entity.Role;
+import org.maxpri.blps.model.entity.User;
 import org.maxpri.blps.repository.articleRepository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

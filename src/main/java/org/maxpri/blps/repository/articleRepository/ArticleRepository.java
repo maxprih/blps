@@ -2,7 +2,7 @@ package org.maxpri.blps.repository.articleRepository;
 
 import org.maxpri.blps.model.dto.ArticleDto;
 import org.maxpri.blps.model.dto.ArticlePreviewDto;
-import org.maxpri.blps.model.entity.articleEntity.Article;
+import org.maxpri.blps.model.entity.Article;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

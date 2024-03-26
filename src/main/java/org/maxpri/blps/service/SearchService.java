@@ -4,7 +4,7 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import org.maxpri.blps.model.dto.ArticleSearchDto;
-import org.maxpri.blps.model.entity.articleEntity.Article;
+import org.maxpri.blps.model.entity.Article;
 import org.maxpri.blps.utils.ElasticUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

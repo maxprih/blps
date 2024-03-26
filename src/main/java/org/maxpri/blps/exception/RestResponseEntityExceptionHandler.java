@@ -30,4 +30,10 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         MessageResponse response = new MessageResponse("Не найден пользователь с именем: " + e.getUsername());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(value = ImageNotFoundException.class)
+    private ResponseEntity<MessageResponse> handleImageNotFound(ImageNotFoundException e) {
+        MessageResponse response = new MessageResponse("Не найдена картинка с именем: " + e.getFilename());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }

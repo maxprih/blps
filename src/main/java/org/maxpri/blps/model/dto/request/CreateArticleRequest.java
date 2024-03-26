@@ -3,7 +3,9 @@ package org.maxpri.blps.model.dto.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -20,4 +22,6 @@ public class CreateArticleRequest {
     private String previewText;
 
     private Set<Long> tagIds;
+
+    private List<MultipartFile> files;
 }
