@@ -52,9 +52,8 @@ public class ArticleService {
     }
 
     public ArticlePreviewDto getPreviewById(Long id) {
-        ArticlePreviewDto previewDto = articleRepository.findArticlePreview(id)
+        return articleRepository.findArticlePreview(id)
                 .orElseThrow(() -> new ArticleNotFoundException(id));
-        return previewDto;
     }
 
     public Object getArticleById(Long id) {

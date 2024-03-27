@@ -33,7 +33,25 @@ spring:
     show-sql: false
     hibernate:
       ddl-auto: validate
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8282/realms/blps
+          jwk-set-uri: http://localhost:8282/realms/blps/protocol/openid-connect/certs
+      client:
+        registration:
+          keycloak:
+            client-id: backend
+            client-secret: O2sknqBYnHTE8fitIjr7aWegnUe9B6P1
+
+
 maxpri:
   app:
     jwtExpirationMs: 10000000
     jwtSecret: ======================MAXPRI=TEST===========================
+keycloak:
+  server-url: http://localhost:8282
+  realm: blps
+  username: admin
+  password: admin

@@ -3,9 +3,7 @@ package org.maxpri.blps.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.maxpri.blps.model.dto.request.SignInRequest;
 import org.maxpri.blps.model.dto.request.SignUpRequest;
-import org.maxpri.blps.model.dto.response.JwtResponse;
 import org.maxpri.blps.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,15 +26,10 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/sign-in")
-    @Operation(summary = "Вход")
-    public ResponseEntity<JwtResponse> signIn(@RequestBody @Valid SignInRequest signInRequest) {
-        return ResponseEntity.ok(authService.signIn(signInRequest));
-    }
-
     @PostMapping("/sign-up")
     @Operation(summary = "Регистрация")
-    public ResponseEntity<JwtResponse> signUp(@RequestBody @Valid SignUpRequest signUpRequest) {
-        return ResponseEntity.ok(authService.signUp(signUpRequest));
+    public ResponseEntity<?> signUp(@RequestBody @Valid SignUpRequest signUpRequest) {
+        authService.addUser(signUpRequest);
+        return ResponseEntity.ok().build();
     }
 }

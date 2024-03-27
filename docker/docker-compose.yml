@@ -98,6 +98,38 @@ services:
       - ./conf/postgresql-42.6.0.jar:/usr/share/logstash/postgresql-42.6.0.jar
     networks:
       - maxprinet
+  keycloak-postgres:
+    image: postgres
+    container_name: keycloak-postgres
+    restart: on-failure
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: keycloak-db
+    ports:
+      - "5435:5432"
+    networks:
+      - maxprinet
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:20.0.2
+    container_name: keycloak
+    command:
+      - start --auto-build --db postgres --hostname-strict-https false --hostname-strict false --proxy edge --http-enabled true --import-realm --spi-user-profile-legacy-user-profile-read-only-attributes *_RES_ACCESS_MODE
+    environment:
+      KC_DB_URL: jdbc:postgresql://keycloak-postgres:5432/keycloak-db
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+      KC_DB_SCHEMA: public
+      KC_FEATURES: preview
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8282:8080"
+    depends_on:
+      - keycloak-postgres
+    networks:
+      - maxprinet
 networks:
   maxprinet:
 volumes:
