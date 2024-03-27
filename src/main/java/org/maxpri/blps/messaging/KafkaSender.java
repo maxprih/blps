@@ -28,7 +28,8 @@ public class KafkaSender {
         kafkaTemplate.send(topicName, payload);
     }
 
-    public Object sendAndGet(String topicName, Object payload) throws ExecutionException, InterruptedException, TimeoutException {
+    public Object sendAndGet(String topicName, String replyingTopicName, Object payload) throws ExecutionException, InterruptedException, TimeoutException {
+        replyingKafkaTemplate.setDefaultTopic(replyingTopicName);
         ProducerRecord<String, Object> record = new ProducerRecord<>(topicName, payload);
         RequestReplyFuture<String, Object, Object> future = replyingKafkaTemplate.sendAndReceive(record);
         ConsumerRecord<String, Object> response = future.get(15, TimeUnit.SECONDS);

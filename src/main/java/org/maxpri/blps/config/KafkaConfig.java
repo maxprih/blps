@@ -15,6 +15,8 @@ import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 @Configuration
 public class KafkaConfig {
     private String replyImageUrlTopic = "image-url-reply-topic";
+    private String replyAllVersionTopic = "all-version-reply-topic";
+    private String rollbackVersionReplyingTopic = "rollback-version-reply-topic";
     @Value("${spring.kafka.consumer.group-id}")
     private String groupId;
 
@@ -29,19 +31,11 @@ public class KafkaConfig {
                                                       KafkaTemplate<String, Object> template) {
 
         factory.setReplyTemplate(template);
-        ConcurrentMessageListenerContainer<String, Object> container = factory.createContainer(replyImageUrlTopic);
+        ConcurrentMessageListenerContainer<String, Object> container = factory.createContainer(replyImageUrlTopic, replyAllVersionTopic, rollbackVersionReplyingTopic);
         container.getContainerProperties().setGroupId(groupId);
         ReplyingKafkaTemplate<String, Object, Object> replier = new ReplyingKafkaTemplate<>(pf, container);
         replier.setDefaultTopic(replyImageUrlTopic);
         return replier;
     }
 
-//    @Bean
-//    public ConcurrentMessageListenerContainer<String, Object> repliesContainer(
-//            ConcurrentKafkaListenerContainerFactory<String, Object> containerFactory) {
-//        ConcurrentMessageListenerContainer<String, Object> repliesContainer = containerFactory.createContainer(REPLY_TOPICS);
-//        repliesContainer.getContainerProperties().setGroupId(CONSUMER_GROUPS);
-//        repliesContainer.setAutoStartup(false);
-//        return repliesContainer;
-//    }
 }

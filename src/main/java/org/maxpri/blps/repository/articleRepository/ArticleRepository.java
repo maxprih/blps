@@ -1,13 +1,16 @@
 package org.maxpri.blps.repository.articleRepository;
 
+import jakarta.transaction.Transactional;
 import org.maxpri.blps.model.dto.ArticleDto;
 import org.maxpri.blps.model.dto.ArticlePreviewDto;
 import org.maxpri.blps.model.entity.Article;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,4 +35,9 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     @Query("SELECT DISTINCT new org.maxpri.blps.model.dto.ArticlePreviewDto(a.id, a.name, a.previewText) FROM Article a join a.tags t where t.id in (:tagIds) and a.isDeleted = false GROUP BY a.id HAVING COUNT(DISTINCT t.id) = :tagCount")
     List<ArticlePreviewDto> findArticlesByTagIds(@Param("tagIds") List<Long> tagIds, @Param("tagCount") Integer tagCount);
+
+    @Transactional
+    @Modifying
+    @Query("SELECT a FROM Article a WHERE (a.isRejected = true OR a.isDeleted = true) AND a.lastModified < :cutoffDate")
+    List<Article> deleteRejectedArticlesOlderThanOneWeek(LocalDateTime cutoffDate);
 }

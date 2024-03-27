@@ -2,13 +2,14 @@ package org.maxpri.blps.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.maxpri.blps.model.dto.ArticlePreviewDto;
-import org.maxpri.blps.model.dto.ArticleSearchDto;
 import org.maxpri.blps.model.dto.request.CreateArticleRequest;
 import org.maxpri.blps.model.dto.response.MessageResponse;
 import org.maxpri.blps.model.entity.Article;
 import org.maxpri.blps.service.ArticleService;
 import org.maxpri.blps.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -36,15 +37,22 @@ public class ArticleController {
 
     @GetMapping("/search")
     @Operation(summary = "Поиск статьи по названию")
-    public ResponseEntity<List<ArticleSearchDto>> search(@RequestParam String query) throws IOException {
-        return ResponseEntity.ok(searchService.findByNameFuzzy(query));
+    public ResponseEntity<Page<Article>> searchNew(@RequestParam String query,
+                                                   Pageable page) throws IOException {
+        return ResponseEntity.ok(searchService.search(query, page));
     }
 
-    @GetMapping("/search-sub")
-    @Operation(summary = "Поиск статьи по подстроке названия")
-    public ResponseEntity<List<ArticleSearchDto>> searchWildcard(@RequestParam String query) throws IOException {
-        return ResponseEntity.ok(searchService.findByNameWildcard(query));
-    }
+//    @GetMapping("/search-new")
+//    @Operation(summary = "Поиск статьи по названию")
+//    public ResponseEntity<List<ArticleSearchDto>> search(@RequestParam String query) throws IOException {
+//        return ResponseEntity.ok(searchService.findByNameFuzzy(query));
+//    }
+//
+//    @GetMapping("/search-sub")
+//    @Operation(summary = "Поиск статьи по подстроке названия")
+//    public ResponseEntity<List<ArticleSearchDto>> searchWildcard(@RequestParam String query) throws IOException {
+//        return ResponseEntity.ok(searchService.findByNameWildcard(query));
+//    }
 
     @GetMapping("/{id}")
     @Operation(summary = "Получение статьи по ID")
@@ -89,12 +97,6 @@ public class ArticleController {
         articleService.fullDeleteArticle(id);
         return ResponseEntity.ok().build();
     }
-//
-//    @PostMapping("/{id}/rollback")
-//    @Operation(summary = "Восстановление статьи")
-//    public ResponseEntity<Long> rollbackArticle(@PathVariable Long id) {
-//        return ResponseEntity.ok(articleService.rollbackArticle(id));
-//    }
 
     @PostMapping("/{id}/image")
     @Operation(summary = "Добавление картинки к статье")

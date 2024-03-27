@@ -7,6 +7,7 @@ import org.maxpri.blps.messaging.KafkaSender;
 import org.maxpri.blps.model.dto.ArticleDto;
 import org.maxpri.blps.model.dto.ArticlePreviewDto;
 import org.maxpri.blps.model.dto.DeletedArticleResponse;
+import org.maxpri.blps.model.dto.messages.ArticleMessage;
 import org.maxpri.blps.model.dto.messages.ImageMessage;
 import org.maxpri.blps.model.dto.messages.ImageNameMessage;
 import org.maxpri.blps.model.dto.request.CreateArticleRequest;
@@ -37,6 +38,9 @@ public class ArticleService {
     private final String imageTopic = "image-topic";
     private final String imageUrlName = "image-url-topic";
     private final String deleteImageTopic = "delete-image-topic";
+    private final String versionTopic = "version-topic";
+    private final String replyingImageUrlTopic = "image-url-reply-topic";
+    private final String deleteVersionTopic = "delete-version-topic";
 
     private final ArticleRepository articleRepository;
     private final TagRepository tagRepository;
@@ -132,7 +136,7 @@ public class ArticleService {
 
     public String getUrlForImage(String filename) throws ExecutionException, InterruptedException, TimeoutException {
         doesImageExist(filename);
-        return sender.sendAndGet(imageUrlName, filename).toString();
+        return sender.sendAndGet(imageUrlName, replyingImageUrlTopic, filename).toString();
     }
 
     @Transactional
@@ -148,6 +152,8 @@ public class ArticleService {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new ArticleNotFoundException(id));
 
+        sender.send(versionTopic, mapArticleToMessage(article));
+
         article.setName(modifyRequest.getName());
         article.setBody(modifyRequest.getBody());
         article.setPreviewText(modifyRequest.getPreviewText());
@@ -159,9 +165,9 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
-    public List<ArticlePreviewDto> search(String query) {
-        return articleRepository.findPreviewsBySearchString(query.toLowerCase());
-    }
+//    public List<ArticlePreviewDto> search(String query) {
+//        return articleRepository.findPreviewsBySearchString(query.toLowerCase());
+//    }
 
     public MessageResponse approveArticle(Long id) {
         Article article = articleRepository.findByIdAndIsApprovedAndIsRejectedAndIsDeleted(id, false, false, false)
@@ -197,17 +203,16 @@ public class ArticleService {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new ArticleNotFoundException(id));
         article.setIsDeleted(true);
+        article.setLastModified(LocalDateTime.now());
         article.setBody("");
         articleRepository.save(article);
         return article.getId();
     }
 
-    public Long rollbackArticle(Long id) {
-        Article article = articleRepository.findById(id)
-                .orElseThrow(() -> new ArticleNotFoundException(id));
-        article.setIsDeleted(false);
-        articleRepository.save(article);
-        return article.getId();
+    public void deleteOldRejectedArticles() {
+        List<Article> articles = articleRepository.deleteRejectedArticlesOlderThanOneWeek(LocalDateTime.now().minusDays(7));
+        System.out.println(articles);
+        System.out.println(articles.size());
     }
 
     @Transactional
@@ -217,14 +222,24 @@ public class ArticleService {
         Set<String> imageNames = article.getImageFilenames();
 
         for (String imageName : imageNames) {
-            deleteImage(imageName);
+            deleteImageByName(imageName);
         }
+        deleteArticleVersions(articleId);
         articleRepository.deleteById(articleId);
     }
 
     public void deleteImageByName(String imageName) {
         doesImageExist(imageName);
         deleteImage(imageName);
+    }
+
+    private void deleteArticleVersions(Long articleId) {
+        sender.send(deleteVersionTopic, articleId);
+    }
+
+    public void saveNewArticleMessage(ArticleMessage articleMessage) {
+        Article article = mapMessageToArticle(articleMessage);
+        articleRepository.save(article);
     }
 
     private void sendImage(Long articleId, MultipartFile file) throws IOException {
@@ -240,5 +255,31 @@ public class ArticleService {
         if (!Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, filename))) {
             throw new ImageNotFoundException(filename);
         }
+    }
+
+    private ArticleMessage mapArticleToMessage(Article article) {
+        return ArticleMessage.builder()
+                .articleId(article.getId())
+                .name(article.getName())
+                .body(article.getBody())
+                .isApproved(article.getIsApproved())
+                .isRejected(article.getIsRejected())
+                .isDeleted(article.getIsDeleted())
+                .lastModified(article.getLastModified())
+                .previewText(article.getPreviewText())
+                .build();
+    }
+
+    private Article mapMessageToArticle(ArticleMessage article) {
+        return Article.builder()
+                .id(article.getArticleId())
+                .name(article.getName())
+                .body(article.getBody())
+                .isApproved(article.getIsApproved())
+                .isRejected(article.getIsRejected())
+                .isDeleted(article.getIsDeleted())
+                .lastModified(article.getLastModified())
+                .previewText(article.getPreviewText())
+                .build();
     }
 }

@@ -3,10 +3,7 @@ package org.maxpri.blps.controller;
 import org.maxpri.blps.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -27,5 +24,11 @@ public class ImageController {
     @GetMapping("/{filename}")
     public ResponseEntity<String> getUrl(@PathVariable String filename) throws ExecutionException, InterruptedException, TimeoutException {
         return ResponseEntity.ok(articleService.getUrlForImage(filename));
+    }
+
+    @DeleteMapping("/{filename}")
+    public ResponseEntity<String> deleteImage(@PathVariable String filename){
+        articleService.deleteImageByName(filename);
+        return ResponseEntity.ok().build();
     }
 }

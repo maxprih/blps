@@ -7,7 +7,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.type.mapping: imageNameMessage:org.maxpri.blps.model.dto.messages.ImageNameMessage
+        spring.json.type.mapping: imageNameMessage:org.maxpri.blps.model.dto.messages.ImageNameMessage, articleMessage:org.maxpri.blps.model.dto.messages.ArticleMessage, articleVersion:org.maxpri.blps.model.dto.messages.ArticleVersion, articleAllVersions:org.maxpri.blps.model.dto.messages.ArticleAllVersions
         spring.json.trusted.packages: "*"
     producer:
       acks: -1
@@ -15,8 +15,7 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
-        spring.json.type.mapping: imageMessage:org.maxpri.blps.model.dto.messages.ImageMessage
-
+        spring.json.type.mapping: imageMessage:org.maxpri.blps.model.dto.messages.ImageMessage, articleMessage:org.maxpri.blps.model.dto.messages.ArticleMessage
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/blps
@@ -45,11 +44,6 @@ spring:
             client-id: backend
             client-secret: O2sknqBYnHTE8fitIjr7aWegnUe9B6P1
 
-
-maxpri:
-  app:
-    jwtExpirationMs: 10000000
-    jwtSecret: ======================MAXPRI=TEST===========================
 keycloak:
   server-url: http://localhost:8282
   realm: blps
